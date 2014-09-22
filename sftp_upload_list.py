@@ -17,14 +17,14 @@ class SftpUploadListCommand(sublime_plugin.TextCommand):
         else:
             regions = [r for r in sel]
 
-        file_list = [view.substr(r).encode('utf-8') for r in regions]
+        file_list = [view.substr(r).strip() for r in regions]
 
         def confirm_folder(index):
             if (index != -1):
                 self.upload_from_folder(folders[index], file_list)
 
         if (len(folders) > 1):
-            window.show_quick_panel(folders, confirm_folder)
+            self.show_quick_panel(folders, confirm_folder)
         else:
             if folders:
                 self.upload_from_folder(folders[0], file_list)
@@ -54,6 +54,12 @@ class SftpUploadListCommand(sublime_plugin.TextCommand):
             if index == 1:
                 window.run_command('sftp_upload_file', {'paths': paths})
 
-        window.show_quick_panel([["No", "Do nothing"],
+        self.show_quick_panel([["No", "Do nothing"],
                                 ["Yes", "Upload {0} files".format(len(paths))]],
                                 confirm_upload)
+
+    # Helper method to call show_quick_panel without throwing errors.
+    # In ST3 subsequent calls to show_quick_panel will raise a "Quick panel unavailable" error.
+    # See http://www.sublimetext.com/forum/viewtopic.php?f=6&t=10999
+    def show_quick_panel(self, options, done):
+        sublime.set_timeout(lambda: self.view.window().show_quick_panel(options, done), 10)

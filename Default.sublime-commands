@@ -1,0 +1,6 @@
+[
+    {
+        "caption": "SFTP: Upload list",
+        "command": "sftp_upload_list"
+    }
+]
