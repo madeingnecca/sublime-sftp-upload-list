@@ -36,7 +36,11 @@ class SftpUploadListCommand(sublime_plugin.TextCommand):
         paths = []
         errors = []
         for relative_path in file_list:
-            path = folder.rstrip(os.sep) + os.sep + relative_path.lstrip(os.sep)
+            # Assemble the full path of the file.
+            # "/" symbol could be used as directory separator in relative path
+            # so all occurences of this character
+            # must be replaced with the separator used by the os.
+            path = folder.rstrip(os.sep) + os.sep + relative_path.replace('/', os.sep).lstrip(os.sep)
             if not os.path.exists(path):
                 errors.append('File {0} does not exist.'.format(path))
             else:
